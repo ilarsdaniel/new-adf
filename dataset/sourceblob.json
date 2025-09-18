@@ -1,0 +1,33 @@
+{
+	"name": "sourceblob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "srcblob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "empinfo.txt",
+				"container": "src-container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "karthi ",
+				"type": "String"
+			},
+			{
+				"name": " manick",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
