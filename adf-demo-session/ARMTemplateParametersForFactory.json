@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-demo-session"
+		},
+		"datalake_dest_accountKey": {
+			"value": ""
+		},
+		"destdatalake_accountKey": {
+			"value": ""
+		},
+		"srcblob_connectionString": {
+			"value": ""
+		},
+		"srccont_connectionString": {
+			"value": ""
+		},
+		"datalake_dest_properties_typeProperties_url": {
+			"value": "https://adfdatalakesess.dfs.core.windows.net/"
+		},
+		"destdatalake_properties_typeProperties_url": {
+			"value": "https://adfdatalakesess.dfs.core.windows.net/"
+		},
+		"gitsource_properties_typeProperties_url": {
+			"value": "https://github.com/ilarsdaniel/new-adf"
+		}
+	}
+}
