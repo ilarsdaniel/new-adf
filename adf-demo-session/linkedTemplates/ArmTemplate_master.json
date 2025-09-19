@@ -7,13 +7,21 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-demo-session"
 		},
-		"datalake_dest_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'datalake_dest'"
-		},
 		"destdatalake_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'destdatalake'"
+		},
+		"destination_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'destination_blob'"
+		},
+		"git_datalake_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'git_datalake'"
+		},
+		"src_blob_cont_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'src_blob_cont'"
 		},
 		"srcblob_connectionString": {
 			"type": "secureString",
@@ -23,17 +31,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'srccont'"
 		},
-		"datalake_dest_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adfdatalakesess.dfs.core.windows.net/"
-		},
 		"destdatalake_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adfdatalakesess.dfs.core.windows.net/"
 		},
-		"gitsource_properties_typeProperties_url": {
+		"git_datalake_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://github.com/ilarsdaniel/new-adf"
+			"defaultValue": "https://adfdatalakesess.dfs.core.windows.net/"
+		},
+		"git_src_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -62,26 +70,32 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"destination_blob_connectionString": {
+						"value": "[parameters('destination_blob_connectionString')]"
+					},
+					"src_blob_cont_connectionString": {
+						"value": "[parameters('src_blob_cont_connectionString')]"
+					},
 					"srccont_connectionString": {
 						"value": "[parameters('srccont_connectionString')]"
-					},
-					"datalake_dest_accountKey": {
-						"value": "[parameters('datalake_dest_accountKey')]"
 					},
 					"destdatalake_accountKey": {
 						"value": "[parameters('destdatalake_accountKey')]"
 					},
+					"git_datalake_accountKey": {
+						"value": "[parameters('git_datalake_accountKey')]"
+					},
 					"srcblob_connectionString": {
 						"value": "[parameters('srcblob_connectionString')]"
-					},
-					"datalake_dest_properties_typeProperties_url": {
-						"value": "[parameters('datalake_dest_properties_typeProperties_url')]"
 					},
 					"destdatalake_properties_typeProperties_url": {
 						"value": "[parameters('destdatalake_properties_typeProperties_url')]"
 					},
-					"gitsource_properties_typeProperties_url": {
-						"value": "[parameters('gitsource_properties_typeProperties_url')]"
+					"git_datalake_properties_typeProperties_url": {
+						"value": "[parameters('git_datalake_properties_typeProperties_url')]"
+					},
+					"git_src_properties_typeProperties_url": {
+						"value": "[parameters('git_src_properties_typeProperties_url')]"
 					}
 				}
 			},

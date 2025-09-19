@@ -5,10 +5,16 @@
 		"factoryName": {
 			"value": "adf-demo-session"
 		},
-		"datalake_dest_accountKey": {
+		"destdatalake_accountKey": {
 			"value": ""
 		},
-		"destdatalake_accountKey": {
+		"destination_blob_connectionString": {
+			"value": ""
+		},
+		"git_datalake_accountKey": {
+			"value": ""
+		},
+		"src_blob_cont_connectionString": {
 			"value": ""
 		},
 		"srcblob_connectionString": {
@@ -17,14 +23,14 @@
 		"srccont_connectionString": {
 			"value": ""
 		},
-		"datalake_dest_properties_typeProperties_url": {
-			"value": "https://adfdatalakesess.dfs.core.windows.net/"
-		},
 		"destdatalake_properties_typeProperties_url": {
 			"value": "https://adfdatalakesess.dfs.core.windows.net/"
 		},
-		"gitsource_properties_typeProperties_url": {
-			"value": "https://github.com/ilarsdaniel/new-adf"
+		"git_datalake_properties_typeProperties_url": {
+			"value": "https://adfdatalakesess.dfs.core.windows.net/"
+		},
+		"git_src_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
 		},
 		"containerUri": {
 			"value": ""

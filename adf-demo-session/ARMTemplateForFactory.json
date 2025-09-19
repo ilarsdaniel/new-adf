@@ -7,13 +7,21 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-demo-session"
 		},
-		"datalake_dest_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'datalake_dest'"
-		},
 		"destdatalake_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'destdatalake'"
+		},
+		"destination_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'destination_blob'"
+		},
+		"git_datalake_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'git_datalake'"
+		},
+		"src_blob_cont_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'src_blob_cont'"
 		},
 		"srcblob_connectionString": {
 			"type": "secureString",
@@ -23,17 +31,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'srccont'"
 		},
-		"datalake_dest_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adfdatalakesess.dfs.core.windows.net/"
-		},
 		"destdatalake_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adfdatalakesess.dfs.core.windows.net/"
 		},
-		"gitsource_properties_typeProperties_url": {
+		"git_datalake_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://github.com/ilarsdaniel/new-adf"
+			"defaultValue": "https://adfdatalakesess.dfs.core.windows.net/"
+		},
+		"git_src_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
 		}
 	},
 	"variables": {
@@ -41,13 +49,13 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/demopipe')]",
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline_z0r')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Copy_zhf",
+						"name": "Copy_z0r",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -60,11 +68,11 @@
 						"userProperties": [
 							{
 								"name": "Source",
-								"value": "src-container//empinfo.txt"
+								"value": "container//commingsoon.jpg"
 							},
 							{
 								"name": "Destination",
-								"value": "dest-container//"
+								"value": "src-container//"
 							}
 						],
 						"typeProperties": {
@@ -72,7 +80,7 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
+									"recursive": false,
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -104,14 +112,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "SourceDataset_zhf",
+								"referenceName": "SourceDataset_z0r",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "DestinationDataset_zhf",
+								"referenceName": "DestinationDataset_z0r",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -121,16 +129,15 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2025-09-12T07:27:34Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceDataset_zhf')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_zhf')]"
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_z0r')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_z0r')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/blob_copy')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -160,93 +167,36 @@
 								}
 							},
 							"sink": {
-								"type": "JsonSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
+									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "JsonWriteSettings"
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
 								}
 							},
-							"enableStaging": false
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
 						},
 						"inputs": [
 							{
-								"referenceName": "sourceblob",
+								"referenceName": "source",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "Json1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2025-09-17T07:06:44Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/sourceblob')]",
-				"[concat(variables('factoryId'), '/datasets/Json1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "git",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Json2",
+								"referenceName": "destination",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -259,12 +209,39 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/git')]",
-				"[concat(variables('factoryId'), '/datasets/Json2')]"
+				"[concat(variables('factoryId'), '/datasets/source')]",
+				"[concat(variables('factoryId'), '/datasets/destination')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DestinationDataset_zhf')]",
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_z0r')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "destination_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "src-container"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/destination_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_z0r')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -277,7 +254,60 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"container": "dest-container"
+						"fileName": "commingsoon.jpg",
+						"container": "container"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "����\u0000\u0010JFIF\u0000\u0001\u0001\u0001\u0001",
+						"type": "String"
+					},
+					{
+						"name": "\u0001",
+						"type": "String"
+					},
+					{
+						"name": "\u0000\u0000��\u0000�Exif\u0000\u0000MM\u0000*\u0000\u0000\u0000\b\u0000\u0005\u0001\u000e\u0000\u0002\u0000\u0000\u0000?\u0000\u0000\u0000J\u0001\u0012\u0000\u0003\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u001a\u0000\u0005\u0000\u0000\u0000\u0001\u0000\u0000\u0000�\u0001\u001b\u0000\u0005\u0000\u0000\u0000\u0001\u0000\u0000\u0000���\u0000\u0002\u0000\u0000\u0000\u000b\u0000\u0000\u0000�\u0000\u0000\u0000\u0000Arch Bridge (Rakotzbrucke or Devils Bridge) in Kromlau",
+						"type": "String"
+					},
+					{
+						"name": " Germany\u0000\u0000\u0000\u0001",
+						"type": "String"
+					},
+					{
+						"name": "\u0000\u0000\u0000\u0001\u0000\u0000\u0001",
+						"type": "String"
+					},
+					{
+						"name": "\u0000\u0000\u0000\u0001DieterMeyrl\u0000��\u0005�http://ns.adobe.com/xap/1.0/\u0000<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/srccont')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/destination')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "destination_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "container"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -287,67 +317,11 @@
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/srccont')]"
+				"[concat(variables('factoryId'), '/linkedServices/destination_blob')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Json1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "destdatalake",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileSystem": "blobcopyact"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/destdatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Json2')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "datalake_dest",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileSystem": "blobcopyact"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"karthi ": {
-							"type": "string"
-						},
-						" manick": {
-							"type": "string"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/datalake_dest')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SourceDataset_zhf')]",
+			"name": "[concat(parameters('factoryName'), '/source')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -365,107 +339,13 @@
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/srccont')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/git')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "gitsource",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "https://github.com/ilarsdaniel/new-adf"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/gitsource')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sourceblob')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "srcblob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "empinfo.txt",
-						"container": "src-container"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "karthi ",
-						"type": "String"
-					},
-					{
-						"name": " manick",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/srcblob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/datalake_dest')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('datalake_dest_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('datalake_dest_accountKey')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "gitconfig",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/gitconfig')]"
+				"[concat(variables('factoryId'), '/linkedServices/srccont')]"
 			]
 		},
 		{
@@ -492,14 +372,50 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/gitsource')]",
+			"name": "[concat(parameters('factoryName'), '/destination_blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('destination_blob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/git_datalake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('git_datalake_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('git_datalake_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "gitconfig",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/gitconfig')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/git_src')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "HttpServer",
 				"typeProperties": {
-					"url": "[parameters('gitsource_properties_typeProperties_url')]",
+					"url": "[parameters('git_src_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
 				},
@@ -511,6 +427,19 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/gitconfig')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/src_blob_cont')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('src_blob_cont_connectionString')]"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/srcblob')]",
